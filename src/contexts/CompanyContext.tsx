@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 import type { Company } from "@/lib/types";
 
 const CompanyContext = createContext<Company | null>(null);
@@ -11,9 +12,9 @@ export function useCompany(): Company {
   return context;
 }
 
-/** Dados locais da SmartImob — API temporariamente ignorada */
+/** Dados locais da SmartImob — usados como fallback de exibição enquanto a empresa não é carregada */
 const DEFAULT_COMPANY: Company = {
-  id: "37fcee72-7db3-4227-95cc-1d3bd5bd1224",
+  id: "",
   name: "Imobiliária SmartImob",
   email: "contato@imoveissmart.com.br",
   phone: "48996764446",
@@ -55,12 +56,54 @@ function applyBrandSettings(comp: Company) {
 }
 
 export function CompanyProvider({ children }: { children: React.ReactNode }) {
+  const [company, setCompany] = useState<Company>(DEFAULT_COMPANY);
+
   useEffect(() => {
-    applyBrandSettings(DEFAULT_COMPANY);
+    let cancelled = false;
+
+    async function loadCompany() {
+      const email = import.meta.env.NEXT_PUBLIC_COMPANY_EMAIL || import.meta.env.VITE_COMPANY_EMAIL;
+      const id = import.meta.env.NEXT_PUBLIC_COMPANY_ID || import.meta.env.VITE_COMPANY_ID;
+
+      if (!email && !id) {
+        console.warn("Configure NEXT_PUBLIC_COMPANY_EMAIL ou NEXT_PUBLIC_COMPANY_ID no .env.local");
+        return;
+      }
+
+      let query = supabase
+        .from("companies")
+        .select("id, name, logo, phone, email, address, settings");
+
+      const { data, error } = id
+        ? await query.eq("id", id).maybeSingle()
+        : await query.eq("email", email!).maybeSingle();
+
+      if (cancelled) return;
+
+      if (error) {
+        console.error("Erro ao buscar empresa:", error.message);
+        return;
+      }
+      if (!data) {
+        console.warn(`Empresa não encontrada (email=${email}, id=${id}). Verifique o .env.local.`);
+        return;
+      }
+
+      setCompany(data as Company);
+    }
+
+    loadCompany();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
+  useEffect(() => {
+    applyBrandSettings(company);
+  }, [company]);
+
   return (
-    <CompanyContext.Provider value={DEFAULT_COMPANY}>
+    <CompanyContext.Provider value={company}>
       {children}
     </CompanyContext.Provider>
   );

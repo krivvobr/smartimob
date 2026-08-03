@@ -107,7 +107,6 @@ export default function ImovelPage() {
         notes: `Interesse no ${imovel.isDevelopment ? "empreendimento" : "imóvel"}: ${imovel.nome} (ID/Slug: ${imovel.id}). ${formMessage ? `Mensagem: ${formMessage}` : ""}`,
         company_id: company.id,
         property_id: !imovel.isDevelopment && isUuid ? imovel.id : null,
-        development_id: imovel.isDevelopment && isUuid ? imovel.id : null,
       });
 
       if (error) throw error;
@@ -279,7 +278,7 @@ export default function ImovelPage() {
                 </div>
 
                 <a
-                  href={buildWhatsAppUrl(company.phone, propertyWhatsAppMessage(imovel.nome))}
+                  href={buildWhatsAppUrl(company.settings?.whatsapp || company.phone || "48996764446", propertyWhatsAppMessage(imovel.nome))}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full mt-8 bg-primary hover:bg-[hsl(0_73%_41%)] text-white py-4 font-display uppercase tracking-widest text-sm transition-colors duration-300 flex justify-center items-center gap-3"

@@ -1,5 +1,6 @@
-export function buildWhatsAppUrl(phone: string, message: string): string {
-  const digits = phone.replace(/\D/g, "");
+export function buildWhatsAppUrl(phone: string | null | undefined, message: string): string {
+  const digits = (phone || "").replace(/\D/g, "");
+  if (!digits) return `https://wa.me/?text=${encodeURIComponent(message)}`;
   // Ensure country code is present. In Brazil it is 55.
   const formattedPhone = digits.startsWith("55") ? digits : `55${digits}`;
   return `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
