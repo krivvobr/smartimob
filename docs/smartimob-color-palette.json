@@ -1,0 +1,126 @@
+{
+  "brand": "SmartImob",
+  "description": "Paleta de cores extraída da logo SmartImob - Assessoria Imobiliária",
+  "colors": {
+    "primary": {
+      "name": "Vermelho Primário",
+      "hex": "#E31E24",
+      "rgb": "rgb(227, 30, 36)",
+      "hsl": "hsl(358, 78%, 50%)",
+      "usage": "CTAs, links, destaques principais, logo 'Smart'"
+    },
+    "primaryHover": {
+      "name": "Vermelho Escuro",
+      "hex": "#B71C1C",
+      "rgb": "rgb(183, 28, 28)",
+      "hsl": "hsl(0, 73%, 41%)",
+      "usage": "Hover de botões, degradê 'Imob'"
+    },
+    "secondary": {
+      "name": "Cinza Prédio",
+      "hex": "#8C8C8C",
+      "rgb": "rgb(140, 140, 140)",
+      "hsl": "hsl(0, 0%, 55%)",
+      "usage": "Ícones, linhas decorativas, subtítulo da logo"
+    },
+    "textPrimary": {
+      "name": "Texto Principal",
+      "hex": "#2B2B2B",
+      "rgb": "rgb(43, 43, 43)",
+      "hsl": "hsl(0, 0%, 17%)",
+      "usage": "Títulos, texto principal do corpo"
+    },
+    "textSecondary": {
+      "name": "Texto Secundário",
+      "hex": "#5C5C5C",
+      "rgb": "rgb(92, 92, 92)",
+      "hsl": "hsl(0, 0%, 36%)",
+      "usage": "Parágrafos, texto institucional, descrições"
+    },
+    "border": {
+      "name": "Bordas/Divisores",
+      "hex": "#D9D9D9",
+      "rgb": "rgb(217, 217, 217)",
+      "hsl": "hsl(0, 0%, 85%)",
+      "usage": "Bordas de cards, divisores, separadores"
+    },
+    "backgroundLight": {
+      "name": "Fundo Claro",
+      "hex": "#F5F5F5",
+      "rgb": "rgb(245, 245, 245)",
+      "hsl": "hsl(0, 0%, 96%)",
+      "usage": "Seções alternadas, fundo de header/footer"
+    },
+    "backgroundWhite": {
+      "name": "Branco",
+      "hex": "#FFFFFF",
+      "rgb": "rgb(255, 255, 255)",
+      "hsl": "hsl(0, 0%, 100%)",
+      "usage": "Fundo padrão, cards de imóveis"
+    },
+    "success": {
+      "name": "Sucesso",
+      "hex": "#2E7D32",
+      "rgb": "rgb(46, 125, 50)",
+      "hsl": "hsl(123, 46%, 34%)",
+      "usage": "Status 'Imóvel disponível', confirmações"
+    },
+    "warning": {
+      "name": "Alerta",
+      "hex": "#F9A825",
+      "rgb": "rgb(249, 168, 37)",
+      "hsl": "hsl(42, 94%, 56%)",
+      "usage": "Status 'Últimas unidades', avisos"
+    },
+    "error": {
+      "name": "Erro/Indisponível",
+      "hex": "#C62828",
+      "rgb": "rgb(198, 40, 40)",
+      "hsl": "hsl(0, 66%, 47%)",
+      "usage": "Status indisponível, mensagens de erro em formulários"
+    }
+  },
+  "gradients": {
+    "primaryGradient": {
+      "name": "Degradê da Marca",
+      "css": "linear-gradient(135deg, #E31E24 0%, #B71C1C 100%)",
+      "usage": "Hero section, botões destacados, texto do logo"
+    }
+  },
+  "cssVariables": {
+    "--color-primary": "#E31E24",
+    "--color-primary-hover": "#B71C1C",
+    "--color-secondary": "#8C8C8C",
+    "--color-text-primary": "#2B2B2B",
+    "--color-text-secondary": "#5C5C5C",
+    "--color-border": "#D9D9D9",
+    "--color-bg-light": "#F5F5F5",
+    "--color-bg-white": "#FFFFFF",
+    "--color-success": "#2E7D32",
+    "--color-warning": "#F9A825",
+    "--color-error": "#C62828"
+  },
+  "tailwindConfig": {
+    "colors": {
+      "primary": {
+        "DEFAULT": "#E31E24",
+        "hover": "#B71C1C"
+      },
+      "secondary": "#8C8C8C",
+      "text": {
+        "primary": "#2B2B2B",
+        "secondary": "#5C5C5C"
+      },
+      "border": "#D9D9D9",
+      "background": {
+        "light": "#F5F5F5",
+        "white": "#FFFFFF"
+      },
+      "status": {
+        "success": "#2E7D32",
+        "warning": "#F9A825",
+        "error": "#C62828"
+      }
+    }
+  }
+}

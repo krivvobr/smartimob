@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* SmartImob brand palette — docs/smartimob-color-palette.json */
+    --background: 0 0% 100%;
+    /* #FFFFFF */
+    --foreground: 0 0% 17%;
+    /* #2B2B2B Texto Principal */
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 17%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 17%;
+
+    --primary: 358 78% 50%;
+    /* #E31E24 Vermelho Primário */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 55%;
+    /* #8C8C8C Cinza Prédio */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 0 0% 96%;
+    /* #F5F5F5 */
+    --muted-foreground: 0 0% 36%;
+    /* #5C5C5C */
+
+    --accent: 358 78% 50%;
+    /* #E31E24 */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 66% 47%;
+    /* #C62828 */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 85%;
+    /* #D9D9D9 */
+    --input: 0 0% 85%;
+    --ring: 358 78% 50%;
+
+    --radius: 0;
+
+    /* Extra cores brand */
+    --navy: 0 0% 17%;
+    /* #2B2B2B — substitui navy antigo */
+    --navy-light: 0 0% 25%;
+    --gold: 0 0% 55%;
+    /* #8C8C8C — alinhado ao secondary */
+    --gold-light: 0 0% 70%;
+
+    --color-primary-hover: 0 73% 41%;
+    /* #B71C1C */
+    --color-success: 123 46% 34%;
+    /* #2E7D32 */
+    --color-warning: 42 94% 56%;
+    /* #F9A825 */
+
+    /* Typography Overrides */
+    --font-sans: 'Inter', sans-serif;
+    --font-heading: 'Playfair Display', serif;
+    --font-serif: 'Playfair Display', serif;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Playfair Display', serif;
+    @apply tracking-tight;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Playfair Display', serif;
+  }
+
+  .font-serif-lux {
+    font-family: 'Playfair Display', serif;
+  }
+
+  .font-body {
+    font-family: 'Inter', sans-serif;
+  }
+
+  .brand-divider {
+    @apply h-[1px] w-20 bg-secondary mx-auto md:mx-0;
+  }
+
+  .glassmorphism {
+    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-sm;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-[hsl(0_73%_41%)] bg-clip-text text-transparent;
+  }
+
+  .brand-gradient {
+    background: linear-gradient(135deg, #E31E24 0%, #B71C1C 100%);
+  }
+}
