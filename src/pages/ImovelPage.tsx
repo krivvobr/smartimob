@@ -182,8 +182,12 @@ export default function ImovelPage() {
                 <span className="w-8 h-[1px] bg-primary" />
                 Sobre o Projeto
               </h3>
-              <div className="font-body text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                {imovel.descricao || `Bem-vindo ao ${imovel.nome}. Com design arrojado e localização privilegiada no litoral catarinense, oferece o melhor em conforto e sofisticação. As metragens, detalhes da planta e valores atualizados variam conforme a tabela oficial. Consulte nosso corretor para obter opções de financiamento e customização.`}
+              <div className="font-body text-muted-foreground leading-relaxed whitespace-pre-wrap [&_p]:mb-3 last:[&_p]:mb-0">
+                {imovel.descricao ? (
+                  <div dangerouslySetInnerHTML={{ __html: imovel.descricao }} />
+                ) : (
+                  `Bem-vindo ao ${imovel.nome}. Com design arrojado e localização privilegiada no litoral catarinense, oferece o melhor em conforto e sofisticação. As metragens, detalhes da planta e valores atualizados variam conforme a tabela oficial. Consulte nosso corretor para obter opções de financiamento e customização.`
+                )}
               </div>
 
               {imovel.imagens.length > 0 && (
@@ -223,6 +227,25 @@ export default function ImovelPage() {
                         <span className="text-sm text-muted-foreground">E mais {imovel.imagens.length - 8} imagens.</span>
                       </div>
                     )}
+                  </div>
+                </div>
+              )}
+
+              {imovel.detalhes && imovel.detalhes.length > 0 && (
+                <div className="pt-8">
+                  <h3 className="font-display text-2xl text-foreground uppercase tracking-widest flex items-center gap-4 mb-6">
+                    <span className="w-8 h-[1px] bg-primary" />
+                    Características
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {imovel.detalhes.map((feature, i) => (
+                      <div key={i} className="flex items-center gap-3 bg-zinc-50 border border-border/50 px-4 py-3">
+                        <span className="w-4 h-4 flex items-center justify-center text-primary shrink-0">
+                          <Check className="w-4 h-4" />
+                        </span>
+                        <span className="font-body text-sm text-foreground capitalize">{feature}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
