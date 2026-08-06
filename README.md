@@ -1,2 +1,2 @@
 # Smartimob
-- fix p´agina imoveis
+- fix pagina imoveis
