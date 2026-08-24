@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { Shield, TrendingUp } from "lucide-react";
+import { Shield, TrendingUp, Sparkles, SlidersHorizontal, ArrowRight, RotateCcw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { imoveis as staticImoveis } from "@/data/imoveis";
 import { ImovelCard } from "@/components/imoveis/ImovelCard";
+import { HomeSearch, SearchFilters } from "@/components/home/HomeSearch";
 import fachadaImg from "@/assets/fachada-smartimob.jpg";
 import { useCompany } from "@/contexts/CompanyContext";
 import { supabase } from "@/lib/supabase";
@@ -82,6 +83,16 @@ const Index = () => {
   const [mappedDevelopments, setMappedDevelopments] = useState<Imovel[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Search & Filter state
+  const [searchFilters, setSearchFilters] = useState<SearchFilters>({
+    finalidade: "compra",
+    cidade: "",
+    tipo: "",
+    faixaValor: "",
+  });
+  const [isSearchActive, setIsSearchActive] = useState(false);
+  const [showAllProperties, setShowAllProperties] = useState(false);
+
   useEffect(() => {
     // Preload all slide images so transitions don't flash white
     heroSlides.forEach((src) => {
@@ -122,7 +133,7 @@ const Index = () => {
 
         const mappedProps: Imovel[] = [];
 
-        // Map all properties (only properties, no developments cards in grid)
+        // Map all properties
         if (propertiesData && propertiesData.length > 0) {
           propertiesData.forEach((prop) => {
             const parentDev = prop.development_id && developmentsData
@@ -195,12 +206,109 @@ const Index = () => {
 
   const displayDevs = mappedDevelopments.slice(0, 3);
 
+  // Available filters extracted dynamically
+  const availableCities = Array.from(
+    new Set(
+      properties
+        .map((p) => {
+          if (!p.localizacao) return null;
+          const parts = p.localizacao.split("/");
+          return parts[0]?.trim();
+        })
+        .filter((c): c is string => Boolean(c))
+    )
+  );
+
+  const availableTypes = Array.from(
+    new Set(properties.map((p) => p.tipo).filter(Boolean))
+  );
+
+  // Filter properties according to search filters
+  const filteredProperties = properties.filter((prop) => {
+    if (!isSearchActive) return true;
+
+    // Finalidade check
+    if (searchFilters.finalidade) {
+      if (prop.finalidade && prop.finalidade !== "ambos" && prop.finalidade !== searchFilters.finalidade) {
+        return false;
+      }
+    }
+
+    // Cidade check
+    if (searchFilters.cidade) {
+      const propLoc = (prop.localizacao || "").toLowerCase();
+      const filterCity = searchFilters.cidade.toLowerCase();
+      if (!propLoc.includes(filterCity)) {
+        return false;
+      }
+    }
+
+    // Tipo check
+    if (searchFilters.tipo) {
+      const propType = (prop.tipo || "").toLowerCase();
+      const filterType = searchFilters.tipo.toLowerCase();
+      if (!propType.includes(filterType) && !filterType.includes(propType)) {
+        return false;
+      }
+    }
+
+    // Valor check
+    if (searchFilters.faixaValor) {
+      const [minStr, maxStr] = searchFilters.faixaValor.split("-");
+      const min = Number(minStr) || 0;
+      const max = Number(maxStr) || Infinity;
+
+      let val = prop.valorNumerico;
+      if (!val && prop.preco) {
+        const numericOnly = prop.preco.replace(/\D/g, "");
+        if (numericOnly) val = Number(numericOnly);
+      }
+
+      if (val !== undefined && val !== null && val > 0) {
+        if (val < min || val > max) return false;
+      }
+    }
+
+    return true;
+  });
+
+  const handleSearch = (filters: SearchFilters) => {
+    setSearchFilters(filters);
+    const hasFilterApplied = Boolean(
+      filters.cidade ||
+      filters.tipo ||
+      filters.faixaValor ||
+      filters.finalidade === "locacao"
+    );
+    setIsSearchActive(hasFilterApplied);
+    document.getElementById("imoveis")?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleClearSearch = () => {
+    setSearchFilters({
+      finalidade: "compra",
+      cidade: "",
+      tipo: "",
+      faixaValor: "",
+    });
+    setIsSearchActive(false);
+  };
+
+  // Determine which properties to render:
+  // When no search is active: default to 3 featured properties (or all if toggled)
+  // When search is active: show all filtered results
+  const displayedProperties = isSearchActive
+    ? filteredProperties
+    : showAllProperties
+    ? properties
+    : properties.slice(0, 3);
+
   return (
     <div className="min-h-screen bg-background text-foreground overflow-hidden selection:bg-secondary selection:text-white">
       <Navbar />
 
-      {/* Hero Section — Full Width Carousel */}
-      <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden bg-foreground">
+      {/* Hero Section — Reduced height for instant search visibility */}
+      <section className="relative min-h-[48vh] md:min-h-[54vh] max-h-[520px] flex items-center justify-center overflow-hidden bg-foreground pt-16 md:pt-20">
         {/* Carousel Background */}
         <AnimatePresence mode="wait">
           <motion.div
@@ -223,76 +331,156 @@ const Index = () => {
         </AnimatePresence>
 
         {/* Carousel Dots */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+        <div className="absolute bottom-20 md:bottom-24 left-1/2 -translate-x-1/2 flex gap-2 z-20">
           {heroSlides.map((_, i) => (
             <button
               key={i}
               onClick={() => setCurrentSlide(i)}
-              className={`h-2 transition-all duration-300 ${i === currentSlide ? "bg-primary w-6" : "bg-white/40 w-2"}`}
+              className={`h-1.5 transition-all duration-300 ${i === currentSlide ? "bg-primary w-6" : "bg-white/40 w-2"}`}
               aria-label={`Slide ${i + 1}`}
             />
           ))}
         </div>
 
-        {/* Center Content Box */}
+        {/* Center Content Box — Compact Luxury */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="relative z-10 bg-foreground/60 backdrop-blur-md p-8 md:p-14 border border-primary/40 flex flex-col items-center text-center shadow-2xl mx-6"
+          transition={{ duration: 0.7, delay: 0.2 }}
+          className="relative z-10 bg-foreground/65 backdrop-blur-md px-6 py-5 md:px-10 md:py-6 border border-primary/40 flex flex-col items-center text-center shadow-2xl mx-4 mb-10 md:mb-14"
         >
-          <h1 className="font-display text-3xl md:text-5xl text-white mb-2 tracking-wider uppercase">
+          <h1 className="font-display text-2xl sm:text-3xl md:text-4xl text-white mb-1.5 tracking-wider uppercase">
             Imobiliária SmartImob
           </h1>
-          <h2 className="font-body text-[10px] md:text-sm tracking-[0.2em] md:tracking-[0.3em] uppercase text-secondary mb-8 text-center">
-            Assessoria Imobiliária
+          <h2 className="font-body text-[9px] sm:text-xs tracking-[0.25em] uppercase text-secondary font-medium">
+            Assessoria Imobiliária de Alto Padrão
           </h2>
-          <a
-            href="#imoveis"
-            onClick={(e) => {
-              e.preventDefault();
-              document.getElementById("imoveis")?.scrollIntoView({ behavior: "smooth" });
-            }}
-            className="border border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 font-body text-xs tracking-widest uppercase transition-all duration-300"
-          >
-            Ver Imóveis
-          </a>
         </motion.div>
       </section>
 
-      {/* Portfólio Grid */}
-      <section id="imoveis" className="py-24 bg-white relative">
+      {/* Floating Modern Search Bar Section — Elevated position */}
+      <section className="relative -mt-16 sm:-mt-20 md:-mt-20 z-30 mb-8 sm:mb-12">
+        <HomeSearch
+          onSearch={handleSearch}
+          onClear={handleClearSearch}
+          availableCities={availableCities}
+          availableTypes={availableTypes}
+          initialFilters={searchFilters}
+          isFiltered={isSearchActive}
+          totalResults={isSearchActive ? filteredProperties.length : undefined}
+        />
+      </section>
+
+      {/* Portfólio Grid — Imóveis em Destaque */}
+      <section id="imoveis" className="py-16 md:py-24 bg-white relative">
         <div className="container mx-auto px-6 max-w-7xl">
-          <div className="mb-12">
-            <motion.h2
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="font-display text-3xl md:text-4xl text-foreground uppercase tracking-widest"
-            >
-              Imóveis Exclusivos
-            </motion.h2>
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+            <div>
+              <motion.span
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="font-body text-xs tracking-[0.3em] uppercase text-secondary font-medium block mb-2"
+              >
+                {isSearchActive ? "Filtro Aplicado" : "Seleção de Imóveis"}
+              </motion.span>
+              <motion.h2
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="font-display text-3xl md:text-4xl text-foreground uppercase tracking-widest flex items-center gap-3"
+              >
+                {isSearchActive ? "Resultados da Busca" : "Imóveis em Destaque"}
+              </motion.h2>
+            </div>
+
+            {/* Actions / Filter Info */}
+            <div className="flex items-center gap-4">
+              {isSearchActive && (
+                <button
+                  onClick={handleClearSearch}
+                  className="inline-flex items-center gap-2 text-xs font-body uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors border-b border-border pb-1"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  Ver Destaques
+                </button>
+              )}
+              {!isSearchActive && properties.length > 3 && (
+                <button
+                  onClick={() => setShowAllProperties((prev) => !prev)}
+                  className="inline-flex items-center gap-2 border border-foreground/30 hover:border-primary text-foreground hover:text-primary px-5 py-2.5 font-body text-xs tracking-widest uppercase transition-all duration-300"
+                >
+                  {showAllProperties ? "Ver apenas os 3 destaques" : `Ver todos os imóveis (${properties.length})`}
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+          {/* Cards Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
             {loading ? (
               Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className="animate-pulse bg-muted border border-border/40 aspect-[4/3]" />
               ))
-            ) : properties.length > 0 ? (
-              properties.map((imovel, index) => (
-                <ImovelCard key={imovel.id} imovel={imovel} index={index} />
+            ) : displayedProperties.length > 0 ? (
+              displayedProperties.map((imovel, index) => (
+                <ImovelCard
+                  key={imovel.id}
+                  imovel={imovel}
+                  index={index}
+                  featured={!isSearchActive}
+                />
               ))
             ) : (
-              <div className="col-span-full py-12 text-center text-primary/60 font-body text-sm tracking-wide">
-                Nenhum imóvel disponível no momento.
+              <div className="col-span-full py-16 px-6 text-center bg-muted/40 border border-dashed border-border rounded-none">
+                <div className="max-w-md mx-auto space-y-4">
+                  <div className="w-12 h-12 mx-auto bg-primary/10 flex items-center justify-center text-primary">
+                    <SlidersHorizontal className="w-6 h-6" />
+                  </div>
+                  <h3 className="font-display text-xl uppercase tracking-wider text-foreground">
+                    Nenhum imóvel encontrado
+                  </h3>
+                  <p className="font-body text-sm text-muted-foreground font-light leading-relaxed">
+                    Não encontramos imóveis disponíveis para os critérios selecionados. Tente ajustar os filtros ou consulte nossa equipe para opções sob medida.
+                  </p>
+                  <div className="pt-2 flex flex-wrap items-center justify-center gap-4">
+                    <button
+                      onClick={handleClearSearch}
+                      className="bg-foreground text-white hover:bg-primary px-6 py-2.5 font-body text-xs tracking-widest uppercase transition-colors"
+                    >
+                      Limpar Filtros
+                    </button>
+                    <a
+                      href={buildWhatsAppUrl(company.settings?.whatsapp || company.phone || "48996764446", generalWhatsAppMessage())}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-[#25D366] hover:bg-[#128C7E] text-white px-6 py-2.5 font-body text-xs tracking-widest uppercase transition-colors"
+                    >
+                      Falar com Consultor
+                    </a>
+                  </div>
+                </div>
               </div>
             )}
           </div>
+
+          {/* Bottom Toggle Button if not active search */}
+          {!isSearchActive && properties.length > 3 && !showAllProperties && (
+            <div className="mt-14 text-center">
+              <button
+                onClick={() => setShowAllProperties(true)}
+                className="inline-flex items-center gap-3 border border-primary text-primary hover:bg-primary hover:text-white px-8 py-3.5 font-body text-xs tracking-widest uppercase transition-all duration-300 shadow-sm"
+              >
+                <span>Explorar Todos os Imóveis ({properties.length})</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Explore por Tipo */}
+      {/* Explore por Tipo / Empreendimentos */}
       <section className="py-24 bg-foreground relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "32px 32px" }} />
 
@@ -310,7 +498,7 @@ const Index = () => {
             </h2>
           </motion.div>
 
-          {/* Grid assimétrico — rows explícitos, sem wrapper intermediário */}
+          {/* Grid assimétrico */}
           <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-[288px_288px] gap-3">
             {displayDevs.length > 0 ? (
               displayDevs.map((devImovel, index) => {
@@ -359,9 +547,8 @@ const Index = () => {
                 );
               })
             ) : (
-              // Original Fallback Code
+              // Fallback
               <>
-                {/* Grande — Apartamento (span 2 cols + 2 rows) */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0.97 }}
                   whileInView={{ opacity: 1, scale: 1 }}
@@ -391,7 +578,6 @@ const Index = () => {
                   <div className="absolute bottom-5 left-5 w-8 h-8 border-b border-l border-secondary/30 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-75" />
                 </motion.div>
 
-                {/* Penthouse (col 3, row 1) */}
                 <motion.div
                   initial={{ opacity: 0, x: 30 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -420,7 +606,6 @@ const Index = () => {
                   <div className="absolute top-3 right-3 w-6 h-6 border-t border-r border-secondary/60 opacity-0 group-hover:opacity-100 transition-all duration-500" />
                 </motion.div>
 
-                {/* Cobertura Duplex (col 3, row 2) */}
                 <motion.div
                   initial={{ opacity: 0, x: 30 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -511,8 +696,6 @@ const Index = () => {
         </div>
       </section>
 
-
-
       {/* Sobre Nós */}
       <section className="py-24 bg-white border-t border-border/50 relative overflow-hidden">
         <div className="absolute -top-10 -right-20 w-[500px] h-[1px] bg-secondary/30 transform -rotate-45" />
@@ -571,6 +754,7 @@ const Index = () => {
           </div>
         </div>
       </section>
+
       {/* Contact CTA */}
       <section className="py-20 bg-foreground relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-secondary/50 to-transparent" />

@@ -145,11 +145,15 @@ export interface Imovel {
   vagas?: string | number;
   localizacao?: string;
   isDevelopment?: boolean;
+  finalidade?: "compra" | "locacao" | "ambos";
+  valorNumerico?: number;
+  destaque?: boolean;
 }
 
 import { formatPrice } from "./formatters";
 
 export function mapPropertyToImovel(prop: Property): Imovel {
+  const priceNum = prop.price ? Number(prop.price) : undefined;
   return {
     id: prop.id,
     nome: prop.title,
@@ -157,7 +161,7 @@ export function mapPropertyToImovel(prop: Property): Imovel {
     construtora: "", // Will be filled or default
     imagens: prop.images && prop.images.length > 0 ? prop.images : ["/slide/vul1.jpg"],
     descricao: prop.description || "",
-    preco: prop.price && Number(prop.price) > 0 ? formatPrice(Number(prop.price)) : "Consulte",
+    preco: priceNum && priceNum > 0 ? formatPrice(priceNum) : "Consulte",
     detalhes: Array.isArray(prop.features)
       ? prop.features.map((f) => (typeof f === "string" ? f : f.name))
       : [],
@@ -168,6 +172,9 @@ export function mapPropertyToImovel(prop: Property): Imovel {
     vagas: prop.parking_spaces ? String(prop.parking_spaces) : undefined,
     localizacao: prop.address ? `${prop.address.city}/${prop.address.state}` : "Itapema/SC",
     isDevelopment: false,
+    finalidade: "compra",
+    valorNumerico: priceNum && priceNum > 0 ? priceNum : undefined,
+    destaque: true,
   };
 }
 
@@ -182,11 +189,12 @@ export function mapDevelopmentToImovel(dev: Development, devProps: Property[] = 
   let metragem: string | undefined = undefined;
   let dormitorios: string | undefined = undefined;
   let vagas: string | undefined = undefined;
+  let minPrice: number | undefined = undefined;
 
   if (devProps.length > 0) {
     const prices = devProps.map(p => Number(p.price || 0)).filter(p => p > 0);
     if (prices.length > 0) {
-      const minPrice = Math.min(...prices);
+      minPrice = Math.min(...prices);
       preco = `A partir de ${formatPrice(minPrice)}`;
     }
     
@@ -226,5 +234,8 @@ export function mapDevelopmentToImovel(dev: Development, devProps: Property[] = 
     vagas,
     localizacao: dev.address ? `${dev.address.city}/${dev.address.state}` : "Itapema/SC",
     isDevelopment: true,
+    finalidade: "compra",
+    valorNumerico: minPrice,
+    destaque: true,
   };
 }
