@@ -13,6 +13,9 @@ export const Navbar = () => {
     const whatsappPhone = company.settings?.whatsapp || company.phone || "48996764446";
     const whatsappUrl = buildWhatsAppUrl(whatsappPhone, generalWhatsAppMessage());
 
+    const instagramUrl = company.settings?.socialMedia?.instagram || "https://www.instagram.com/smartimob.imobiliaria/";
+    const facebookUrl = company.settings?.socialMedia?.facebook || "https://www.facebook.com/smartimobassessoria/?ref=NONE_xav_ig_profile_page_web#";
+
     return (
         <nav className="fixed top-0 left-0 right-0 z-50">
             {/* Barra do menu */}
@@ -93,14 +96,14 @@ export const Navbar = () => {
                         </motion.div>
 
                         <div className="flex items-center gap-5 border-l border-border pl-6 md:pl-8">
-                            <span className="text-foreground/70" aria-label="Instagram">
+                            <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="text-foreground/70 hover:text-primary transition-colors" aria-label="Instagram">
                                 <Instagram className="w-4 h-4" />
-                            </span>
-                            <span className="text-foreground/70" aria-label="Facebook">
+                            </a>
+                            <a href={facebookUrl} target="_blank" rel="noopener noreferrer" className="text-foreground/70 hover:text-primary transition-colors" aria-label="Facebook">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
                                 </svg>
-                            </span>
+                            </a>
                             <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="text-foreground/70 hover:text-primary transition-colors" aria-label="WhatsApp">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" />

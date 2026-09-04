@@ -5,6 +5,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { imoveis as staticImoveis } from "@/data/imoveis";
 import { ImovelCard } from "@/components/imoveis/ImovelCard";
+import { ImoveisAluguelDestaque } from "@/components/home/ImoveisAluguelDestaque";
 import { HomeSearch, SearchFilters } from "@/components/home/HomeSearch";
 import fachadaImg from "@/assets/fachada-smartimob.jpg";
 import { useCompany } from "@/contexts/CompanyContext";
@@ -479,6 +480,19 @@ const Index = () => {
           )}
         </div>
       </section>
+
+      {/* Destaque de Imóveis para Alugar */}
+      {!isSearchActive && (
+        <ImoveisAluguelDestaque
+          imoveis={properties}
+          onSelectLocacaoFilter={() => {
+            handleSearch({
+              ...searchFilters,
+              finalidade: "locacao",
+            });
+          }}
+        />
+      )}
 
       {/* Explore por Tipo / Empreendimentos */}
       <section className="py-24 bg-foreground relative overflow-hidden">

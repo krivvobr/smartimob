@@ -1,4 +1,4 @@
-export type PropertyType = "apartment" | "house" | "commercial" | "land" | "studio";
+export type PropertyType = "apartment" | "house" | "commercial" | "land" | "studio" | "farm" | "beach" | "sitio" | "litoral";
 export type PropertyStatus = "available" | "sold" | "reserved" | "rented" | "maintenance";
 export type DevelopmentStatus = "planning" | "construction" | "ready" | "sold-out";
 
@@ -17,6 +17,7 @@ export interface Property {
   title: string;
   description?: string;
   type: PropertyType;
+  purpose?: "sale" | "rent" | "both";
   status: PropertyStatus;
   price?: number;
   area?: number;
@@ -114,6 +115,10 @@ export const PROPERTY_TYPE_LABELS: Record<PropertyType, string> = {
   land: "Terreno",
   commercial: "Comercial",
   studio: "Studio",
+  farm: "Sítio",
+  beach: "Litoral",
+  sitio: "Sítio",
+  litoral: "Litoral",
 };
 
 export const PROPERTY_STATUS_LABELS: Record<PropertyStatus, string> = {
@@ -154,6 +159,11 @@ import { formatPrice } from "./formatters";
 
 export function mapPropertyToImovel(prop: Property): Imovel {
   const priceNum = prop.price ? Number(prop.price) : undefined;
+  const mappedFinalidade = prop.purpose === "rent" ? "locacao" : (prop.purpose === "both" ? "ambos" : "compra");
+  const formattedPrice = priceNum && priceNum > 0 
+    ? (mappedFinalidade === "locacao" ? `${formatPrice(priceNum)}/mês` : formatPrice(priceNum))
+    : "Consulte";
+
   return {
     id: prop.id,
     nome: prop.title,
@@ -161,7 +171,7 @@ export function mapPropertyToImovel(prop: Property): Imovel {
     construtora: "", // Will be filled or default
     imagens: prop.images && prop.images.length > 0 ? prop.images : ["/slide/vul1.jpg"],
     descricao: prop.description || "",
-    preco: priceNum && priceNum > 0 ? formatPrice(priceNum) : "Consulte",
+    preco: formattedPrice,
     detalhes: Array.isArray(prop.features)
       ? prop.features.map((f) => (typeof f === "string" ? f : f.name))
       : [],
@@ -172,7 +182,7 @@ export function mapPropertyToImovel(prop: Property): Imovel {
     vagas: prop.parking_spaces ? String(prop.parking_spaces) : undefined,
     localizacao: prop.address ? `${prop.address.city}/${prop.address.state}` : "Itapema/SC",
     isDevelopment: false,
-    finalidade: "compra",
+    finalidade: mappedFinalidade,
     valorNumerico: priceNum && priceNum > 0 ? priceNum : undefined,
     destaque: true,
   };

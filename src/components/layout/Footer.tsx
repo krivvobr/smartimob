@@ -28,6 +28,9 @@ export const Footer = () => {
     const whatsappUrl = buildWhatsAppUrl(whatsappPhone, generalWhatsAppMessage());
     const creci = company.settings?.creci || "7066-J, 7841-J";
 
+    const instagramUrl = company.settings?.socialMedia?.instagram || "https://www.instagram.com/smartimob.imobiliaria/";
+    const facebookUrl = company.settings?.socialMedia?.facebook || "https://www.facebook.com/smartimobassessoria/?ref=NONE_xav_ig_profile_page_web#";
+
     return (
         <footer id="contato" className="bg-[hsl(0_0%_17%)] text-white pt-32 pb-12 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
@@ -55,17 +58,17 @@ export const Footer = () => {
                                 <Phone className="w-4 h-4 text-primary" /> {formattedPhone}
                             </a>
                             <a href={emailHref} className="flex items-center gap-3 hover:text-primary transition-colors">
-                                <Mail className="w-4 h-4 text-primary" /> {email}
+                                <Mail className="w-4 h-4 text-primary" /> contato@imoveissmart.com.br
                             </a>
                             <div className="pt-4 flex items-center gap-3">
-                                <span className="w-10 h-10 border border-white/20 flex items-center justify-center text-white" aria-label="Instagram">
+                                <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="w-10 h-10 border border-white/20 flex items-center justify-center hover:bg-primary hover:border-primary text-white transition-all duration-300" aria-label="Instagram">
                                     <Instagram className="w-4 h-4" />
-                                </span>
-                                <span className="w-10 h-10 border border-white/20 flex items-center justify-center text-white" aria-label="Facebook">
+                                </a>
+                                <a href={facebookUrl} target="_blank" rel="noopener noreferrer" className="w-10 h-10 border border-white/20 flex items-center justify-center hover:bg-primary hover:border-primary text-white transition-all duration-300" aria-label="Facebook">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
                                     </svg>
-                                </span>
+                                </a>
                                 <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="w-10 h-10 border border-white/20 flex items-center justify-center hover:bg-primary hover:border-primary text-white transition-all duration-300" aria-label="WhatsApp">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" />
